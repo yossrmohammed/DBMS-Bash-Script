@@ -1,15 +1,28 @@
 #! /bin/bash
+cd DB
 
-echo "Enter Database to connect"
-read data_base_name 
-while [ ! -d "$data_base_name" ]
+echo "Enter name to connect"
+read data_base_name
+
+valid=$( ../tableAndDBNamingValidations.sh $data_base_name ) 
+
+while (( valid != 0 )) 
 do
-	echo "this database doesnt exist"
-	echo "please try again"
+  echo $valid
+	echo "Invalid name"
+	echo "Please try again"
+	read data_base_name
+	valid=$( ../tableAndDBNamingValidations.sh $data_base_name )
+done
+
+while [ ! -d $data_base_name ]
+do
+	echo "This database doesnt exist"
+	echo "Please try again"
 	read data_base_name
 done
 
-cd "$data_base_name" 
+cd $data_base_name 
 echo "$data_base_name connected successfully"
 
 PS3="Pick a database task (enter the number): "

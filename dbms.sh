@@ -25,10 +25,10 @@ then
 fi
 ;;
 "ListDataBase")
-echo $option
+./listdatabase
 ;;
 "ConnectToDataBase")
-echo $option
+./connect
 ;;
 "DropDataBase")
 read -p "Enter DataBase name : " dbName
