@@ -1,0 +1,16 @@
+#! /bin/bash
+
+directories=$(ls -F | grep / | sed 's#/$##')
+
+# -F means giving the files and folder a trailing symbol to indicate the type si directories have / and executables have * etc
+
+#grep / to make sure that the output is directories only
+
+# syntax to substitute a pattern s(option) then a delimiter (originally we use / as a delimiter but to avoid confusion i used # so the original syntax was sed 's/\/$//' but now ( s # / $ ## ) 
+
+# so this means to substitute / with an empty replacemnt
+
+echo "Available Databases :"
+
+echo "$directories" 
+
