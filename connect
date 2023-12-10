@@ -32,7 +32,8 @@ do
 	"create") 
 	 echo "Create table" ;;
 	"list") 
-	 echo "list table" ;;
+	 ../../listTable.sh $data_base_name 
+	  ;;
 	"drop") 
 	 echo "drop table";;
 	"insert") 
