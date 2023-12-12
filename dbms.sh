@@ -5,24 +5,15 @@ if [ ! -d "DB" ]
 then
 mkdir -v ./DB
 fi
+
+PS3="Welcome back:) , choose your operation: "
 select option in CreateDataBase ListDataBase ConnectToDataBase DropDataBase exit
 do
 case $option in
 "CreateDataBase")
-read -p "Enter DataBase name : " dbName
-valid=$( ./tableAndDBNamingValidations.sh $dbName )  
-if (( valid == 0 ))
-then
-./createDB.sh  $dbName
-elif (( valid == 1 ))
-then
- echo Invalid starting database name with number
 
-elif (( valid == 2 ))
-then
- echo Invalid  database name contain special character with number
+./createDB.sh  
 
-fi
 ;;
 "ListDataBase")
 ./listdatabase
@@ -31,12 +22,10 @@ fi
 ./connect
 ;;
 "DropDataBase")
-read -p "Enter DataBase name : " dbName
 
-valid=$( ./tableAndDBNamingValidations.sh $dbName )  
 if (( valid == 0 ))
 then
-./dropDB.sh $dbName
+./dropDB.sh #$dbName
 elif (( valid == 1 || valid == 2 ))
 then
  echo Invalid name 
