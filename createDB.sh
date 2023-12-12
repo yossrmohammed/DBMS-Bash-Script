@@ -21,7 +21,7 @@ elif (( valid == 0 ))
 then
 for file in `ls `
 do
-if [ $file = $dbName ]
+if [ $file = $(echo $dbName | tr ' ' '_') ]
 then
 flag=1 
 break
