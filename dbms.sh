@@ -22,14 +22,8 @@ case $option in
 ./connect
 ;;
 "DropDataBase")
+./dropDB.sh 
 
-if (( valid == 0 ))
-then
-./dropDB.sh #$dbName
-elif (( valid == 1 || valid == 2 ))
-then
- echo Invalid name 
-fi
 ;;
 "exit")
 echo "Good bye :)"

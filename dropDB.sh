@@ -1,10 +1,10 @@
 #! /bin/bash
 flag=0
-end=0
+
 cd ./DB
 read -p "Enter DataBase name : " dbName
 valid=$( ../tableAndDBNamingValidations.sh $dbName )  
-while (( end == 0 ))
+while [ true ]
 do
 if (( valid == 0 ))
 then
@@ -14,8 +14,7 @@ if [ $file = $dbName ]
 then 
 flag=1
 break 
-else 
-echo 
+
 fi
 done
 if (( flag == 0 ))
