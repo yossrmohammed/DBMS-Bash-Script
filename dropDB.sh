@@ -55,6 +55,4 @@ break
 echo wrong answer
 ;;
 esac
-
-
 done
