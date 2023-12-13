@@ -6,7 +6,12 @@ read data_base_name
 
 valid=$( ../tableAndDBNamingValidations.sh $data_base_name ) 
 
-while (( valid != 0 )) 
+
+
+while [ ! -d $data_base_name ]
+do
+valid=$( ../tableAndDBNamingValidations.sh $data_base_name ) 
+	while (( valid != 0 )) 
 do
   echo $valid
 	echo "Invalid name"
@@ -14,9 +19,6 @@ do
 	read data_base_name
 	valid=$( ../tableAndDBNamingValidations.sh $data_base_name )
 done
-
-while [ ! -d $data_base_name ]
-do
 	echo "This database doesnt exist"
 	echo "Please try again"
 	read data_base_name
