@@ -32,7 +32,8 @@ select option in "create" "list" "drop" "insert" "select" "updateTable" "delete"
 do 
 	case $option in 
 	"create") 
-	 echo "Create table" ;;
+	 ../../create_table 
+	 ;;
 	"list") 
 	 ../../listTable.sh $data_base_name 
 	  ;;
@@ -40,7 +41,8 @@ do
 	 ../../dropTable.sh $data_base_name 
 	 ;;
 	"insert") 
-	 echo "insert table";;
+	 ../../insert
+	 ;;
 	 "select")
 	 echo "select table";;
 	"delete") 
