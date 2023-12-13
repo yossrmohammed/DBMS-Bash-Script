@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # List all the available tables
-tables=( *.file )
-
+#tables=( *.file )
+read -a tables <<< "$(ls | grep '\.table$')"
 # Check if there are any tables
 if [[ ${#tables[@]} -eq 0 ]]
 then

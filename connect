@@ -32,13 +32,15 @@ select option in "create" "list" "drop" "insert" "select" "delete" "quit"
 do 
 	case $option in 
 	"create") 
-	 echo "Create table" ;;
+	 ../../create_table 
+	 ;;
 	"list") 
 	 echo "list table" ;;
 	"drop") 
 	 echo "drop table";;
 	"insert") 
-	 echo "insert table";;
+	 ../../insert
+	 ;;
 	 "select")
 	 echo "select table";;
 	"delete") 

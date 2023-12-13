@@ -55,6 +55,6 @@ columns=${columns%?}
 #where 0 is the index (starting from the last character ) and n is the number of characters to be removed
 
 
-echo $columns > "$table_name.file"
+echo $columns > "$table_name.table"
 
 echo "Table $table_name created with columns: $columns"
