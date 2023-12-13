@@ -40,12 +40,25 @@ else
 mkdir -v $dbName
 fi
 
-end=1
+
 break
 fi
 fi
-read  -p "Enter DataBase name : " dbName
-valid=$( ../tableAndDBNamingValidations.sh $dbName ) 
+read -p "Do you want to continue? " ans
+case  $ans in 
+"Y" | "y" | "YES" | "yes")
+ read  -p "Enter DataBase name agian: " dbName
+valid=$( ../tableAndDBNamingValidations.sh $dbName )
+ ;;
+"N" | "n" | "NO" | "no")
+
+  break
+;;
+*)
+echo wrong answer
+;;
+esac
+
 done
 
 

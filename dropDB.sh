@@ -42,6 +42,19 @@ fi
 else
  echo Invalid name 
 fi
+read -p "Do you want to continue? " answer
+case  $answer in 
+"Y" | "y" | "YES" | "yes")
 read -p "Enter DataBase name : " dbName
 valid=$( ../tableAndDBNamingValidations.sh $dbName ) 
+ ;;
+"N" | "n" | "NO" | "no")
+break
+;;
+*)
+echo wrong answer
+;;
+esac
+
+
 done
