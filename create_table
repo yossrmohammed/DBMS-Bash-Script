@@ -21,33 +21,29 @@ columns=""
 
 # Loop over the number of columns
 for (( i=1; i<=num_columns; i++ ))
-do
-  # Ask for the column name
-  echo "Enter name for column $i:"
-  read column_name
-
-  # Initialize a variable for the data type
-  data_type=""
-
-  # Keep asking for the data type until a valid selection is made
-  while [[ $data_type != "int" && $data_type != "string" ]]
   do
-    # Display the data type menu
-    echo "Select data type for column $i:"
-    echo "1. int"
-    echo "2. string"
+      # Ask for the column name
+      echo "Enter name for column $i:"
+      read column_name
 
-    read selection
+      # Initialize a variable for the data type
+      data_type=""
 
-    case $selection in
-      1) data_type="int" ;;
-      2) data_type="string" ;;
-      *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
-    esac
+          # Display the data type menu
+          echo "Select data type for column $i:"
+          echo "1. int"
+          echo "2. string"
+
+          read selection
+
+          case $selection in
+            1) data_type="int" ;;
+            2) data_type="string" ;;
+            *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
+          esac
+          
+    columns+="$column_name($data_type),"
   done
-
-  columns+="$column_name($data_type),"
-done
 
 columns=${columns%?}
 # another method is to use columns=${columns:0:-n}
@@ -56,4 +52,32 @@ columns=${columns%?}
 
 echo $columns > "$table_name.table"
 
+while true
+  do
+  echo "Now choose your primary key:"
+  echo "Available columns:"  
+    IFS=,
+    read -ra column_array <<< "$columns"
+    for (( i=0; i<${#column_array[@]}; i++ ))
+    do
+      echo "$((i+1)). ${column_array[i]}"
+    done
+  read primary_key_selection
+
+    # Check if the selection is valid
+        if [[ $primary_key_selection -ge 1 && $primary_key_selection -le ${#column_array[@]} ]]
+        then
+          primary_key=${column_array[$((primary_key_selection-1))]}
+          echo "You selected $primary_key as the primary key"
+          break
+        else
+          echo "Invalid selection. Please try again."
+        fi
+  done
+
+echo $primary_key >> $table_name.table
+
+
+
 echo "Table $table_name created with columns: $columns"
+echo " with $primary_key as the primary key"
