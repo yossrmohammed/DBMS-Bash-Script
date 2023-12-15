@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# List all the available tables
+read -a tables <<< "$(ls | grep '\.table$')"
+
+# Check if there are any tables
+if [[ ${#tables[@]} -eq 0 ]]; then
+  echo "No tables found."
+  exit 1
+fi
+
+# Display the tables
+echo "Available tables:"
+for ((i=0; i<${#tables[@]}; i++)); do
+  echo "$((i+1)). ${tables[i]}"
+done
+
+# Ask for the table selection
+while true; do
+  echo "Enter the number of the table you want to manage:"
+  read selection
+
+  # Check if the selection is valid
+  if [[ $selection -ge 1 && $selection -le ${#tables[@]} ]]; then
+    table_name=${tables[$((selection-1))]}
+    echo "You selected $table_name"
+    break
+  else
+    echo "Invalid selection. Please try again."
+  fi
+done
+
+# Display options for managing the table
+echo "Select an option:"
+echo "1. Delete a specific row"
+echo "2. Delete all data"
+read option
+
+case $option in
+  1)
+    # Delete a specific row
+    echo "Enter the row number to delete:"
+    read row_number
+
+    # Check if it's one of the first two rows
+    while [[ $row_number -le 2 ]]
+    do
+      echo "Cannot delete the first 2 columns"
+      read row_number
+    done
+
+    sed -i "${row_number}d" "$table_name"
+    echo "Row $row_number deleted from $table_name"
+    ;;
+
+  2)
+    # Delete all rows (except first two columns)
+    sed -i '3,$d' "$table_name"
+    echo "Data of $table_name deleted successfully"
+    ;;
+
+  *)
+    echo "Invalid option."
+      echo "Select a valid option:"
+      echo "1. Delete a specific row"
+      echo "2. Delete all data"
+      read option
+    ;;
+esac
