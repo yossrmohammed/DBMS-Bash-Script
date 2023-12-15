@@ -5,44 +5,43 @@
 #tables=( *.file ) gives wrong output if there are no tables
 read -a tables <<< "$(ls | grep '\.table$')"
 
-
 # Check if there are any tables
 if [[ ${#tables[@]} -eq 0 ]]
 then
   echo "No tables found."
+  exit
 fi
-
 
 # Display the tables
 # in case #{$tables[@]} this always is 1 bec number of arrays is 1
 #  ${} --> means variable 
 #  # -> means number
 #  tables[@] --> means each member of the array
-echo "Available tables:"
-for (( i=0; i<${#tables[@]}; i++ ))
-do
-  echo "$((i+1)). ${tables[i]}"
-done
+  echo "Available tables:"
+  for (( i=0; i<${#tables[@]}; i++ ))
+    do
+      echo "$((i+1)). ${tables[i]}"
+    done
 
 
 
 # Ask for the table selection
 # loop that only ends in case of right choice :
-while true
-do
-  echo "Enter the number of the table you want to select:"
-  read selection
+  while true
+    do
+      echo "Enter the number of the table you want to select:"
+      read selection
 
-  # Check if the selection is valid
-  if [[ $selection -ge 1 && $selection -le ${#tables[@]} ]]
-  then
-    table_name=${tables[$((selection-1))]}
-    echo "You selected $table_name"
-    break
-  else
-    echo "Invalid selection. Please try again."
-  fi
-done
+      # Check if the selection is valid
+        if [[ $selection -ge 1 && $selection -le ${#tables[@]} ]]
+        then
+            table_name=${tables[$((selection-1))]}
+            echo "You selected $table_name"
+            break
+        else
+            echo "Invalid selection. Please try again."
+        fi
+    done
 
 
 # Get the column names and data types
@@ -52,80 +51,84 @@ IFS=',' read -a columns <<< "$(head -n 1 "$table_name")"
 
 # Loop over the columns
 for column in "${columns[@]}"
-do
-  # Extract the column name and data type
-  IFS='(' read -a parts <<< "$column"
-  column_name="${parts[0]}"
-  data_type="${parts[1]%%)}"
-done
+  do
+    # Extract the column name and data type
+    IFS='(' read -a parts <<< "$column"
+    column_name="${parts[0]}"
+    data_type="${parts[1]%%)}"
+  done
 
 # Display the columns
-
 for (( i=0; i<${#columns[@]}; i++ ))
-do
-  echo "$((i+1)). ${columns[i]}"
-done
+  do
+    echo "$((i+1)). ${columns[i]}"
+  done
 
 # Initialize an empty string for the row
 row=""
 
 # Loop over the columns and ask for data
-for ((i=0; i<${#columns[@]}; i++)); do
-  column="${columns[i]}"
-  # Extract the column name and data type
-  IFS='(' read -a parts <<< "$column"
-  column_name="${parts[0]}"
-  data_type="${parts[1]%%)}"
-  
-  # Ask for the data
-  echo "Enter data for $column_name ($data_type):"
-  read data
+for ((i=0; i<${#columns[@]}; i++));
+ do
+      # to isolate each coulmn individually
+      column="${columns[i]}"
 
-  # Validate the data
-  #primary_key=$(awk 'NR==2' $table_name)
-   # if [[ $primary_key == $columns ]] 
-   # then 
-   #   while ! grep -q "$primary_key_value" "$table_name"
-    #  do
-  #        echo "The primary key value already exists. Please try again."
-   #       read data
-    #  done
-   # fi
+      # Extract the column name and data type
+      IFS='(' read -a parts <<< "$column"
+      column_name="${parts[0]}"
+      data_type="${parts[1]%%)}"
       
-
-  case $data_type in
-    int)
-      # Check if the data is an integer
-      while ! [[ $data =~ ^[0-9]+$ ]]; do
-        echo "Error: $data is not an integer."
-        echo "Please try again."
-        read data
-      done
-      ;;
-
-    string)
-      # Check if the data is a string
-      while ! [[ $data =~ ^[a-zA-Z0-9_." "]*$ ]]; do
-        echo "Error: $data is not in the correct format."
-        echo "Please try again."
-        read data
-      done
-      ;;
-  esac
-
-   primary_key=$(awk 'NR==2' $table_name)
-   if [[ $primary_key == $columns ]] 
-   then
-    while grep -q "$data" "$table_name"; do
-      echo "Error !! : ( $data ) already exists in the primary key column."
-      echo "Please enter another value."
+      # Ask for the data
+      echo "Enter data for $column_name ($data_type):"
       read data
-    done
-  fi
+          
+        case $data_type in
+            int)
+                # Check if the data is an integer
+                while ! [[ $data =~ ^[0-9]+$ ]]; do
+                    if [[ -z $data ]] 
+              then
+                echo "Cannot be empty"
+              else
+                    echo "Error: $data is not an integer."
+              fi
+                    echo "Please try again."
+                    read data
+                done
+            ;;
+
+            string)
+                # Check if the data is a string
+                while ! [[ $data =~ ^[a-zA-Z0-9_." "]*$ ]]; do
+                    echo "Error: $data is not in the correct format."
+                    echo "Please try again."
+                    read data
+                done
+            ;;
+        esac
+
+      read primary_key < $table_name"_primarykey"
+      if [[ $primary_key == $columns ]] 
+      then
+          # -q to prevent grep from displaying the ouput on the terminal while running the script
+          while grep -q "$data" "$table_name";
+            do
+              if [[ -z $data ]] 
+              then
+                echo "Cannot be empty"
+                read data
+              else
+                echo "Error !! : ( $data ) already exists in the primary key column."
+                echo "Please enter another value."
+                read data
+              fi
+                
+            done
+      fi
 
 
-  # Add the data to the row
-  row+="$data,"
+    # Add the data to the row
+    row+="$data,"
 
 done
 

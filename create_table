@@ -4,79 +4,99 @@ echo "Enter the table name:"
 read table_name
 
 # -e is to make sure that table name is unique
+# -e ==> exists 
 while [[ -e "$table_name" ]]
-do
-  echo "Error: $table_name already exists in the current database."
-  echo "Please enter a different table name :"
-  read table_name
-done
+  do
+    echo "Error: $table_name already exists in the current database."
+    echo "Please enter a different table name :"
+    read table_name
+  done
 
 # Ask for the number of columns
 echo "Enter the number of columns:"
 read num_columns
+while ! [[ $num_columns =~ ^[1-9]+$ ]]; do
+        echo "Error: value must be a positive number."
+        echo "Please try again."
+        read num_columns
+      done
 
 # Initialize an empty string for the column names
 # this is to allow column_name with spaces in it
 columns=""
 
-# Loop over the number of columns
-for (( i=1; i<=num_columns; i++ ))
-  do
-      # Ask for the column name
-      echo "Enter name for column $i:"
-      read column_name
-
-      # Initialize a variable for the data type
-      data_type=""
-
-          # Display the data type menu
-          echo "Select data type for column $i:"
+# getting columns names and datatypes
+  for (( i=1; i<=num_columns; i++ ))
+    do
+        # Ask for the column name
+        echo "Enter name for column $i:"
+        read column_name
+  
+  # the while loop ensures correct input and handles empty input
+  # without it enter key without input breaks the condition
+      while true; do
+          echo "Select data type for column $1:"
           echo "1. int"
           echo "2. string"
 
           read selection
 
           case $selection in
-            1) data_type="int" ;;
-            2) data_type="string" ;;
-            *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
+              1) data_type="int"; break ;;
+              2) data_type="string"; break ;;
+              *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
           esac
-          
-    columns+="$column_name($data_type),"
-  done
+      done
 
+         columns+="$column_name($data_type),"
+    done
+
+# after getting all data it should end with an extra , so this next line is to remove it.
 columns=${columns%?}
 # another method is to use columns=${columns:0:-n}
 # where 0 is the index (starting from the last character ) and n is the number of characters to be removed
 
-
+# now columns are stored in the table file
 echo $columns > "$table_name.table"
 
-while true
-  do
-  echo "Now choose your primary key:"
-  echo "Available columns:"  
-    IFS=,
-    read -ra column_array <<< "$columns"
-    for (( i=0; i<${#column_array[@]}; i++ ))
-    do
-      echo "$((i+1)). ${column_array[i]}"
-    done
-  read primary_key_selection
+# primary key selection
+    if [[ $num_columns -gt 1 ]]
+      then
+        IFS=, 
+        # changing columns from a line into an array
+        # changes it from id(int),name(string) --> 1.id 2.name and so on
+        read -a column_array <<< "$columns"
+        echo "Now choose your primary key:"
+        echo "Available columns:"  
+        for (( i=0; i<${#column_array[@]}; i++ ))
+            do
+              echo "$((i+1)). ${column_array[i]}"
+            done
 
-    # Check if the selection is valid
-        if [[ $primary_key_selection -ge 1 && $primary_key_selection -le ${#column_array[@]} ]]
-        then
-          primary_key=${column_array[$((primary_key_selection-1))]}
-          echo "You selected $primary_key as the primary key"
-          break
-        else
-          echo "Invalid selection. Please try again."
-        fi
-  done
+        read primary_key_selection
 
-echo $primary_key >> $table_name.table
+        # Checking if the number is within range 
+        while true;
+        do
+            if [[ $primary_key_selection -ge 1 && $primary_key_selection -le ${#column_array[@]} ]]
+              then
+                  primary_key=${column_array[$((primary_key_selection-1))]}
+                  echo "You selected $primary_key as the primary key"
+                  break 
+              else
+                  echo "Invalid selection. Please try again."
+                  read primary_key_selection
+            fi
+        done
 
+      # if there is only one column it is set as primary key by default
+      else
+          primary_key=$columns
+          echo "Automatically set $primary_key as the primary key"
+    fi
+
+# storing primary key in another file
+echo $primary_key > $table_name".table_primarykey"
 
 
 echo "Table $table_name created with columns: $columns"

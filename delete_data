@@ -42,21 +42,34 @@ case $option in
     echo "Enter the row number to delete:"
     read row_number
 
-    # Check if it's one of the first two rows
-    while [[ $row_number -le 2 ]]
+    # Check if it's the first row
+    while [[ $row_number -eq 1 ]]
     do
-      echo "Cannot delete the first 2 columns"
+      echo "Cannot delete the first row"
+      echo "Enter row number to delete"
       read row_number
     done
 
+    # -i option with sed to edit the file inplace without openning 
+    # {} can be removed and the script will work just fine but they are added to avoid any confusion in more complex expressions
     sed -i "${row_number}d" "$table_name"
     echo "Row $row_number deleted from $table_name"
     ;;
 
   2)
-    # Delete all rows (except first two columns)
-    sed -i '3,$d' "$table_name"
+    # Delete all rows (except first row)
+    sed -i '2,$d' "$table_name"
     echo "Data of $table_name deleted successfully"
+    ;;
+
+  3)
+    # Delete an entire column
+    echo "Enter the name of the column to delete:"
+    read column_name
+
+    # -i option with sed to edit the file inplace without opening
+    sed -i "s/[^,]*$column_name[^,]*,//" "$table_name"
+    echo "Column $column_name deleted from $table_name"
     ;;
 
   *)
@@ -64,6 +77,7 @@ case $option in
       echo "Select a valid option:"
       echo "1. Delete a specific row"
       echo "2. Delete all data"
+      echo "3. Delete an entire column"
       read option
     ;;
 esac
