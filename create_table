@@ -3,12 +3,9 @@
 echo "Enter the table name:"
 read table_name
 
-if [[ $table_name == *' '* ]]
-then
-table_name=$(echo "$table_name" | tr ' ' '_')
-fi
 
- while ! [[ $table_name =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; 
+
+ while ! [[ $table_name =~ ^[a-zA-Z_][a-zA-Z0-9_" "]*$ ]]; 
   do
     echo "Error: $table_name is not in the correct format."
     echo "Please try again."
@@ -23,6 +20,13 @@ while [[ -e "$table_name" ]]
     echo "Please enter a different table name :"
     read table_name
   done
+
+
+if [[ $table_name == *' '* ]]
+then
+table_name=$(echo "$table_name" | tr ' ' '_')
+fi
+
 
 # Ask for the number of columns
 echo "Enter the number of columns:"
