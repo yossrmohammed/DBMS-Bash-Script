@@ -7,6 +7,13 @@ read table_name
 
  while ! [[ $table_name =~ ^[a-zA-Z_][a-zA-Z0-9_" "]*$ ]]; 
   do
+    while [[ -z $table_name ]]
+        do
+          echo "Cannot be Empty !! "
+          echo "Please try again."
+          read table_name
+        done
+
     echo "Error: $table_name is not in the correct format."
     echo "Please try again."
     read table_name
@@ -32,6 +39,14 @@ fi
 echo "Enter the number of columns:"
 read num_columns
 while ! [[ $num_columns =~ ^[1-9]+$ ]]; do
+
+    while [[ -z $num_columns ]]
+        do
+          echo "Cannot be Empty !! "
+          echo "Please try again."
+          read num_columns
+        done
+
         echo "Error: value must be a positive number."
         echo "Please try again."
         read num_columns
@@ -46,6 +61,14 @@ while ! [[ $num_columns =~ ^[1-9]+$ ]]; do
         # Ask for the column name
         echo "Enter name for column $i:"
         read column_name
+
+        while [[ -z $column_name ]]
+        do
+          echo "Cannot be Empty !! "
+          echo "Please try again."
+          read column_name
+        done
+
         if [[ $column_name == *' '* ]]
         then
             column_name=$(echo "$column_name" | tr ' ' '_')
@@ -98,6 +121,14 @@ echo $columns > "$table_name.table"
         # Checking if the number is within range 
         while true;
         do
+
+          while [[ -z $primary_key_selection ]]
+        do
+          echo "Cannot be Empty !! "
+          echo "Please try again."
+          read primary_key_selection
+        done
+
             if [[ $primary_key_selection -ge 1 && $primary_key_selection -le ${#column_array[@]} ]]
               then
                   primary_key=${column_array[$((primary_key_selection-1))]}
