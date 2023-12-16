@@ -1,3 +1,3 @@
 #! /bin/bash
 echo Tables in $1 DataBase :
-ls 
+ls  -I "*.table_primarykey"
