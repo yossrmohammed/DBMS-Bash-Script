@@ -3,6 +3,11 @@
 echo "Enter the table name:"
 read table_name
 
+if [[ $table_name == *' '* ]]
+then
+table_name=$(echo "$table_name" | tr ' ' '_')
+fi
+
 # -e is to make sure that table name is unique
 # -e ==> exists 
 while [[ -e "$table_name" ]]
@@ -22,8 +27,7 @@ while ! [[ $num_columns =~ ^[1-9]+$ ]]; do
       done
 
 # Initialize an empty string for the column names
-# this is to allow column_name with spaces in it
-columns=""
+
 
 # getting columns names and datatypes
   for (( i=1; i<=num_columns; i++ ))
@@ -31,6 +35,11 @@ columns=""
         # Ask for the column name
         echo "Enter name for column $i:"
         read column_name
+        if [[ $column_name == *' '* ]]
+        then
+            column_name=$(echo "$column_name" | tr ' ' '_')
+        fi
+
   
   # the while loop ensures correct input and handles empty input
   # without it enter key without input breaks the condition

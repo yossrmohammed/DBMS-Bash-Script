@@ -2,8 +2,11 @@
 
 
 # List all the available tables
-#tables=( *.file ) gives wrong output if there are no tables
-read -a tables <<< "$(ls | grep '\.table$')"
+#read -a tables <<< $( ls | grep '\.table$' ) faced output problems
+
+shopt -s nullglob
+tables=( *.table )
+
 
 # Check if there are any tables
 if [[ ${#tables[@]} -eq 0 ]]
@@ -13,7 +16,7 @@ then
 fi
 
 # Display the tables
-# in case #{$tables[@]} this always is 1 bec number of arrays is 1
+
 #  ${} --> means variable 
 #  # -> means number
 #  tables[@] --> means each member of the array
@@ -87,13 +90,13 @@ for ((i=0; i<${#columns[@]}; i++));
                 # Check if the data is an integer
                 while ! [[ $data =~ ^[0-9]+$ ]]; do
                     if [[ -z $data ]] 
-              then
-                echo "Cannot be empty"
-              else
-                    echo "Error: $data is not an integer."
-              fi
-                    echo "Please try again."
-                    read data
+                      then
+                        echo "Cannot be empty"
+                      else
+                        echo "Error: $data is not an integer."
+                    fi
+                  echo "Please try again."
+                  read data
                 done
             ;;
 
@@ -107,24 +110,35 @@ for ((i=0; i<${#columns[@]}; i++));
             ;;
         esac
 
-      read primary_key < $table_name"_primarykey"
-      if [[ $primary_key == $columns ]] 
-      then
-          # -q to prevent grep from displaying the ouput on the terminal while running the script
-          while grep -q "$data" "$table_name";
-            do
-              if [[ -z $data ]] 
-              then
+   # Check if the current column is the primary key
+    read primary_key < $table_name"_primarykey"
+
+    # Find the index of the primary key column
+        primary_key_index=-1
+        for ((j=0; j<${#columns[@]}; j++)); do
+            if [[ "${columns[j]}" == *"$primary_key"* ]]; then
+                primary_key_index=$j
+                break
+            fi
+        done
+
+    if [[ $primary_key_index -ne -1 ]]; then
+        # -q to prevent grep from displaying the output on the terminal while running the script
+        while grep -q "^.*,$data," "$table_name"; do
+            if [[ -z $data ]]; then
                 echo "Cannot be empty"
                 read data
-              else
-                echo "Error !! : ( $data ) already exists in the primary key column."
+            else
+                echo "Error: ($data) already exists in the primary key column."
                 echo "Please enter another value."
                 read data
-              fi
-                
-            done
-      fi
+            fi
+        done
+    else
+        echo "Error: Primary key column not found in the table."
+        exit 1
+    fi
+
 
 
     # Add the data to the row
@@ -133,7 +147,7 @@ for ((i=0; i<${#columns[@]}; i++));
 done
 
 # Remove the trailing comma
-row=${row%?}
+#row=${row%?}
 
 # Add the row to the table
 echo $row >> "$table_name"
