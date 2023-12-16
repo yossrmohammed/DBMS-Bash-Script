@@ -22,13 +22,12 @@ then
 echo Incorrect name , no database with this name
 elif  (( flag == 1 ))
 then
-read -p "Are you sure?" ans
+read -p "Are you sure?(y/n)" ans
 case  $ans in 
 "Y" | "y" | "YES" | "yes")
  rm -r ./$dbName
- end=1
- break
  echo database is removed 
+  break
  ;;
 "N" | "n" | "NO" | "no")
 break
@@ -42,7 +41,7 @@ fi
 else
  echo Invalid name 
 fi
-read -p "Do you want to continue? " answer
+read -p "Do you want to continue?(y/n) " answer
 case  $answer in 
 "Y" | "y" | "YES" | "yes")
 read -p "Enter DataBase name : " dbName
