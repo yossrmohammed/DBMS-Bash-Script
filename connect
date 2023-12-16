@@ -44,9 +44,10 @@ do
 	 ../../insert
 	 ;;
 	 "select")
-	 echo "select table";;
+	 ../../selectFromTable.sh
+	 ;;
 	"delete") 
-	 echo "delete table"
+	 ../../delete_data
 	 ;;
 	"updateTable") 
 	 ../../updateTable.sh;;
