@@ -1,7 +1,7 @@
 #! /bin/bash
 
 echo "Tables in $1 database are: "
-for table in $(ls); do
+for table in $(ls -I "*.table_primarykey"); do
     echo $table
 done
 
@@ -19,7 +19,7 @@ while [ true ]; do
     if ((flag == 0)); then
         echo Incorrect name , no tbale with this name
     elif ((flag == 1)); then
-        select option in selectAll SelectCoulmn selectRow; do
+        select option in selectAll SelectCoulmn selectRow ; do
             coulmns=$(awk ' BEGIN{ FS=","}
 {
     if(NR == 1){
