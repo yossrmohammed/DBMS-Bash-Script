@@ -27,7 +27,7 @@ while true; do
 }' ./$TableName)
         noOfCols=$(echo $coulmns | wc -w)
 
-        select option in updateRow updateColumn; do
+        select option in updateRow updateColumn updateSpecificRecord; do
             case $option in
             "updateRow")
                 select col in $coulmns; do
@@ -42,7 +42,7 @@ while true; do
                         if [[ -n "$exist" ]]; then
                             read -p "Enter new value: " newValue
                         else
-                            echo no $col wirh this name
+                            echo no $col with this value
                             break
                         fi
                         pk=$(cut -f1 ./$TableName"_primarykey")
@@ -70,7 +70,6 @@ while true; do
                                 else {
                                     print $0
                                 }
-
                             
                         }' ./$TableName >temp && mv temp ./$TableName
 
@@ -82,7 +81,6 @@ while true; do
                         "int")
 
                             if [[ $newValue =~ ^[0-9]+$ ]]; then
-                                #sed -i  "s/\<$oldValue\>/$newValue/" ./$TableName
 
                                 awk -v oldval="$oldValue" -v newval="$newValue" -v col="$currentCol" 'BEGIN{ FS="," ; OFS=","}
                         { 
@@ -117,7 +115,7 @@ while true; do
                         exist=$(cut -d"," -f $currentCol ./$TableName | sed '1d')
                         
                         if [[ -z "$exist" ]]; then
-                            echo no $col wirh this name
+                            echo no $col with this value
                             break
 
                         fi
@@ -178,11 +176,105 @@ while true; do
                     fi
                 done
                 ;;
+                
+            "updateSpecificRecord")
+            echo "choose attribute(for where condtion)" 
+                select col in $coulmns; do
+                
+                    if (($REPLY > $noOfCols)); then
+                        echo invalid
+                        
+                        else
+                           currentCol=$REPLY
+                        read -p "Enter  value: " val
+                        exist=$(cut -d"," -f $currentCol ./$TableName | grep -w $val)
+
+                        if [[ -n "$exist" ]]; then
+                        echo "choose attribute(which you want to update)" 
+                             select col in $coulmns; do
+                             updatedCol=$REPLY
+                        if (($REPLY > $noOfCols)); then
+                        echo invalid
+                        else
+                        
+                        read -p "Enter new value: " newValue
+                        datatype=$(echo $col | cut -d\( -f2 | cut -d\) -f1)
+                        pk=$(cut -f1 ./$TableName"_primarykey")
+                        if [[ $col = $pk ]]; then
+                            while cut -d"," -f $currentCol "$TableName" | grep -w "$newValue"; do
+                                if [[ -z $newValue ]]; then
+                                    echo "Cannot be empty"
+                                    read data
+                                else
+                                    echo "Error !! : ( $newValue ) already exists in the primary key column."
+                                    read -p "Enter new value agian: " newValue
+                                fi
+
+                            done
+                        fi
+                        case $datatype in
+                        "string")
+                            if [[ $newValue =~ ^[a-zA-Z0-9]+$ ]]; then
+                                awk -v val="$val" -v newval="$newValue" -v col="$currentCol" -v updatedCol="$updatedCol" 'BEGIN{ FS="," ; OFS=","}
+                        { 
+                                if( $col == val ){
+                                    $updatedCol=newval
+                                    print $0
+                                }
+                                else {
+                                    print $0
+                                }
+                            
+                        }' ./$TableName >temp && mv temp ./$TableName
+
+                            else
+                                echo invalid datatype your input must be string
+                            fi
+                            break
+                            ;;
+                        "int")
+
+                            if [[ $newValue =~ ^[0-9]+$ ]]; then
+
+                                awk -v val="$val" -v newval="$newValue" -v col="$currentCol" -v updatedcol="$updatedCol"  'BEGIN{ FS="," ; OFS=","}
+                        { 
+                                if( $col == val ){
+                                    $updatedCol=newval
+                                    print $0
+                                }
+                                else {
+                                    print $0
+                                }
+
+                            
+                        }' ./$TableName >temp && mv temp ./$TableName
+                        break
+                            else
+                                echo invalid datatype your input must be integer
+                            fi
+                            break
+                            ;;
+
+                        esac
+                        fi
+                        break
+                             done
+                        else
+                            echo no $col with this value
+                            break
+                        fi
+
+                    fi
+                    break
+                done
+            ;;
+            
             *)
                 echo invalid option
                 ;;
             esac
 
+        break
         done
 
     fi
