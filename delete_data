@@ -34,6 +34,7 @@ done
 echo "Select an option:"
 echo "1. Delete a specific row"
 echo "2. Delete all data"
+echo "3. Delete all specific column"
 read option
 
 case $option in
@@ -58,6 +59,7 @@ case $option in
 
   2)
     # Delete all rows (except first row)
+    
     sed -i '2,$d' "$table_name"
     echo "Data of $table_name deleted successfully"
     ;;
