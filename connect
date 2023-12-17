@@ -1,5 +1,5 @@
 #! /bin/bash
-cd DB
+
 
 echo "Enter name to connect"
 read data_base_name
@@ -28,25 +28,25 @@ cd $data_base_name
 echo "$data_base_name connected successfully"
 
 PS3="Pick a database task (enter the number): "
-select option in "create" "list" "drop" "insert" "select" "updateTable" "delete" "quit"
+select option in "createTable" "listTables" "dropTables" "insertIntoTables" "selectFromTables" "updateTable" "deleteTable" "quit"
 do 
 	case $option in 
-	"create") 
+	"createTable") 
 	 ../../create_table 
 	 ;;
-	"list") 
+	"listTables") 
 	 ../../listTable.sh $data_base_name 
 	  ;;
-	"drop") 
+	"dropTables") 
 	 ../../dropTable.sh $data_base_name 
 	 ;;
-	"insert") 
+	"insertIntoTables") 
 	 ../../insert
 	 ;;
-	 "select")
+	 "selectFromTables")
 	 ../../selectFromTable.sh
 	 ;;
-	"delete") 
+	"deleteTable") 
 	 ../../delete_data
 	 ;;
 	"updateTable") 

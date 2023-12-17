@@ -9,6 +9,11 @@ read -p "Enter Table name  : " tName
 flag=0
 while [ true ]
 do
+while [[ -z $tName ]]
+do
+echo invlaid empty name
+read -p "Enter Table name agian  : " tName 
+done
 for table in `ls`
 do
 if [ $table = $tName ]
@@ -41,7 +46,6 @@ read -p "Do you want to continue? " ans
 case  $ans in 
 "Y" | "y" | "YES" | "yes")
 read -p "Enter Table name agian  : " tName 
-
  ;;
 "N" | "n" | "NO" | "no")
 break

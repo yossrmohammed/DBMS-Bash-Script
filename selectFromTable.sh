@@ -8,6 +8,11 @@ done
 read -p "Enter Table name  : " tName
 
 while [ true ]; do
+while [[ -z $tName ]]
+do
+echo invlaid empty name
+read -p "Enter Table name agian  : " tName 
+done
     PS3="What do you want to do?"
     flag=0
     for table in $(ls); do
@@ -19,7 +24,7 @@ while [ true ]; do
     if ((flag == 0)); then
         echo Incorrect name , no tbale with this name
     elif ((flag == 1)); then
-        select option in selectAll SelectCoulmn selectRow ; do
+        select option in selectAll SelectCoulmn selectRow; do
             coulmns=$(awk ' BEGIN{ FS=","}
 {
     if(NR == 1){
@@ -50,7 +55,7 @@ while [ true ]; do
 
                 ;;
             "selectRow")
-                PS3="Choose attribute: "
+                
                 select col in $coulmns; do
 
                     if (($REPLY > $noOfCols)); then
@@ -63,14 +68,14 @@ while [ true ]; do
                         if [[ -z $isexist ]]; then
                             echo Sorry, no data match this value , may be you enter wrong value or no records with this value
                         else
-                         awk  -v val="$value" -v col="$column" 'BEGIN{ FS="," }
+                            awk -v val="$value" -v col="$column" 'BEGIN{ FS="," }
                         {       if(NR>1){
                                     if($col==val){
                                     print $0
                                     }
                                     }
                             
-                        }' ./$tName 
+                        }' ./$tName
                         fi
                     fi
                     break
