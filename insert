@@ -122,9 +122,9 @@ for ((i=0; i<${#columns[@]}; i++));
             fi
         done
 
-    if [[ $primary_key_index -ne -1 ]]; then
+    if [[ $column = $primary_key ]]; then
         # -q to prevent grep from displaying the output on the terminal while running the script
-        while [[ `cut -d"," -f $primary_key_index  "$table_name" | grep -w $data` ]];; do
+        while [[ `cut -d"," -f $primary_key_index  "$table_name" | grep -w $data` ]]; do
             if [[ -z $data ]]; then
                 echo "Cannot be empty"
                 read data
@@ -134,9 +134,6 @@ for ((i=0; i<${#columns[@]}; i++));
                 read data
             fi
         done
-    else
-        echo "Error: Primary key column not found in the table."
-        exit 1
     fi
 
 
