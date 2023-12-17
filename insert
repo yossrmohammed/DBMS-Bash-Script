@@ -117,14 +117,14 @@ for ((i=0; i<${#columns[@]}; i++));
         primary_key_index=-1
         for ((j=0; j<${#columns[@]}; j++)); do
             if [[ "${columns[j]}" == *"$primary_key"* ]]; then
-                primary_key_index=$j
+                primary_key_index=$(($j+1))
                 break
             fi
         done
 
     if [[ $primary_key_index -ne -1 ]]; then
         # -q to prevent grep from displaying the output on the terminal while running the script
-        while grep -q "^.*,$data," "$table_name"; do
+        while [[ `cut -d"," -f $primary_key_index  "$table_name" | grep -w $data` ]];; do
             if [[ -z $data ]]; then
                 echo "Cannot be empty"
                 read data
