@@ -1,6 +1,7 @@
 #! /bin/bash
+
 echo "Tables in $1 database are: "
-for table in `ls  `
+for table in `ls  -I "*.table_primarykey"  `
 do
 echo $table
 done
@@ -24,7 +25,7 @@ then
 read -p "Are you sure?" ans
 case  $ans in 
 "Y" | "y" | "YES" | "yes")
- rm -r ./$tName
+ rm -r ./$tName ./$tName"_primarykey"
  echo table is removed 
  break
  ;;
