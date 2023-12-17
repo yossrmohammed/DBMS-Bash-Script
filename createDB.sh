@@ -2,15 +2,14 @@
 
 flag=0
 
-cd ./DB
+
 read -p "Enter DataBase name : " dbName
 valid=$(../tableAndDBNamingValidations.sh $dbName)
 while [ true ]; do
   if ((valid == 1)); then
     echo Invalid starting database name with number
-
   elif ((valid == 2)); then
-    echo Invalid database name contain special character with number
+    echo Invalid database name contain special character 
   elif ((valid == 3)); then
     echo Invalid database name, you enter space!
   elif ((valid == 0)); then

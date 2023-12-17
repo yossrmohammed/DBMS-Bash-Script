@@ -1,5 +1,5 @@
 #! /bin/bash
-cd DB
+
 directories=$(ls -F | grep / | sed 's#/$##')
 
 # -F means giving the files and folder a trailing symbol to indicate the type si directories have / and executables have * etc
