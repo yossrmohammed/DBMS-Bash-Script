@@ -55,44 +55,53 @@ while ! [[ $num_columns =~ ^[1-9]+$ ]]; do
 # Initialize an empty string for the column names
 
 
-# getting columns names and datatypes
-  for (( i=1; i<=num_columns; i++ ))
-    do
-        # Ask for the column name
-        echo "Enter name for column $i:"
+# Initialize an empty array to store column names
+declare -a column_names
+
+for (( i=1; i<=num_columns; i++ )); do
+    # Ask for the column name
+    echo "Enter name for column $i:"
+    read column_name
+
+    while [[ -z $column_name ]]; do
+        echo "Cannot be Empty !! "
+        echo "Please try again."
         read column_name
-
-        while [[ -z $column_name ]]
-        do
-          echo "Cannot be Empty !! "
-          echo "Please try again."
-          read column_name
-        done
-
-        if [[ $column_name == *' '* ]]
-        then
-            column_name=$(echo "$column_name" | tr ' ' '_')
-        fi
-
-  
-  # the while loop ensures correct input and handles empty input
-  # without it enter key without input breaks the condition
-      while true; do
-          echo "Select data type for column $1:"
-          echo "1. int"
-          echo "2. string"
-
-          read selection
-
-          case $selection in
-              1) data_type="int"; break ;;
-              2) data_type="string"; break ;;
-              *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
-          esac
-      done
-
-         columns+="$column_name($data_type),"
     done
+
+    # Check if the column name already exists
+    while [[ " ${column_names[@]} " =~ " $column_name " ]]; do
+        echo "Column name '$column_name' already exists. Please enter a unique name."
+        read column_name
+    done
+
+    # If there are spaces in the column name, replace them with underscores
+    if [[ $column_name == *' '* ]]; then
+        column_name=$(echo "$column_name" | tr ' ' '_')
+    fi
+
+    # Store the column name in the array
+    column_names+=("$column_name")
+
+    # The while loop ensures correct input and handles empty input
+    # without it, the enter key without input breaks the condition
+    while true; do
+        echo "Select data type for column $i:"
+        echo "1. int"
+        echo "2. string"
+
+        read selection
+
+        case $selection in
+            1) data_type="int"; break ;;
+            2) data_type="string"; break ;;
+            *) echo "Invalid selection. Please choose 1 for int or 2 for string." ;;
+        esac
+    done
+
+    columns+="$column_name($data_type),"
+done
+
 
 # after getting all data it should end with an extra , so this next line is to remove it.
 columns=${columns%?}
