@@ -124,7 +124,7 @@ for ((i=0; i<${#columns[@]}; i++));
 
     if [[ $primary_key_index -ne -1 ]]; then
         # -q to prevent grep from displaying the output on the terminal while running the script
-        while [[ `cut -d"," -f $primary_key_index  "$table_name" | grep -w $data` ]];; do
+        while [[ `cut -d"," -f $primary_key_index  "$table_name" | grep -w $data` ]]; do
             if [[ -z $data ]]; then
                 echo "Cannot be empty"
                 read data
