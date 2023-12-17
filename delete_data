@@ -54,7 +54,7 @@ done
     echo "Select an option:"
     echo "1. Delete a specific row"
     echo "2. Delete all data"
-    echo "3. Delete all specific column"
+    echo "3. Delete a specific column"
     read option
 
     while ! [[ $option =~ ^[1-9]+$ ]]; do
@@ -73,21 +73,52 @@ done
 case $option in
   1)
     # Delete a specific row
-    echo "Enter the row number to delete:"
-    read row_number
-
-    # Check if it's the first row
-    while [[ $row_number -eq 1 ]]
-    do
-      echo "Cannot delete the first row"
-      echo "Enter row number to delete"
-      read row_number
-    done
-
     # -i option with sed to edit the file inplace without openning 
     # {} can be removed and the script will work just fine but they are added to avoid any confusion in more complex expressions
-    sed -i "${row_number}d" "$table_name"
-    echo "Row $row_number deleted from $table_name"
+    #sed -i "${row_number}d" "$table_name"
+    #echo "Row $row_number deleted from $table_name"   
+            coulmns=$(awk ' BEGIN{ FS=","}
+{
+    if(NR == 1){
+        for(i=1;i<=NF;i++){
+           print $i  
+        }
+    }
+
+}' ./$table_name)
+        noOfCols=$(echo $coulmns | wc -w)
+             
+                select col in $coulmns; do
+                    if (($REPLY > $noOfCols)); then
+                        echo invalid
+                    else
+                        currentCol=$REPLY
+                        datatype=$(echo $col | cut -d\( -f2 | cut -d\) -f1)
+                        read -p "Enter  value: " oldValue
+                        exist=$(cut -d"," -f $currentCol ./$table_name | grep -w $oldValue)
+
+                        if [[ -z "$exist" ]]; then
+                           echo no $col with this value
+                            break
+                      
+                           
+                        fi
+
+                        awk -v oldval="$oldValue"   -v col="$currentCol" 'BEGIN{ FS="," ; OFS=","}
+                        { 
+                                if( $col == oldval ){
+                                  
+                                }
+                                else {
+                                    print $0
+                                }
+
+                            
+                        }' ./$table_name > temp && mv temp ./$table_name
+
+
+                    fi
+                done
     ;;
 
   2)
@@ -97,15 +128,58 @@ case $option in
     ;;
 
   3)
-    # Delete an entire column
-    echo "Enter the name of the column to delete:"
-    read column_name
+  # Delete an entire column
+# Read the input file
 
-    # -i option with sed to edit the file inplace without opening
-    sed -i "s/[^,]*$column_name[^,]*,//" "$table_name"
-    echo "Column $column_name deleted from $table_name"
-    ;;
+# Display the header (first row) of the file
+header=$(head -n 1 "$table_name")
 
+# Display the column indices
+IFS=',' read -ra columns <<< "$header"
+echo "Columns:"
+for i in "${!columns[@]}"; do
+      echo "$((i+1)): ${columns[$i]}"
+done
+
+# Ask the user for the column index to delete
+read -p "Enter the index of the column to delete: " columnIndex
+
+# Validate user input
+if [[ ! "$columnIndex" =~ ^[0-9]+$ ]]; then
+    echo "Invalid input. Please enter a valid number."
+    exit 1
+fi
+
+# Create a temporary file for the modified content
+tempFile=$(mktemp)
+
+# Process the file, deleting the chosen column while keeping the first row
+awk -v col="$columnIndex" 'BEGIN {FS=OFS=","} {
+  if (FNR == 1) {
+    print $0;  # Print the header as is
+  } else if (FNR > 1) {
+    if (col <= NF) {
+      for(i=1; i<=NF; i++)
+        if (i != col) printf("%s%s", $i, (i==NF)?"":OFS);
+      print "";
+    } else {
+      print $0;  # Print the entire line if col is out of range
+    }
+  }
+}' "$table_name" > "$tempFile"
+
+
+
+
+
+# Replace the original file with the modified content
+mv "$tempFile" "$table_name"
+
+echo "Column deleted successfully."
+
+
+;;
+  
   *)
     echo "Invalid option."
       echo "Select a valid option:"
@@ -114,4 +188,5 @@ case $option in
       echo "3. Delete an entire column"
       read option
     ;;
+
 esac
